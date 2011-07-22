@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.collection.immutable"
+            file="/data/scala-libs/scala_collection_immutable.jar" />
+</permissions>

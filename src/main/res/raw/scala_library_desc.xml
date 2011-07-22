@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.library"
+            file="/data/scala-libs/scala_library.jar" />
+</permissions>

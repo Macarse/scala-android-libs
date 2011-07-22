@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.collection.parallel"
+            file="/data/scala-libs/scala_collection_parallel.jar" />
+</permissions>

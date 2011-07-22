@@ -13,42 +13,68 @@ public class ScalaInstaller {
 
     private static String TAG = "ScalaInstaller";
 
-    public static void installScalaLibs() {
+    public void installScalaLibs() {
         /*
          *  1. Make /system writeable
          *  2. Install files into application directory
          *  3. Change permissions
+         *  4. Create /data/scala-libs directory
          *  4. Make links to ScalaLibs to /system/etc/permissions
          *  5. Make /system read-only
          */
 
         try {
             makeWritable();
-            installFiles(ctx);
+            installFiles();
+            sudo("mkdir -p /data/scala-libs");
+            makeLinks();
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         } finally {
             makeReadOnly();
         }
     }
 
-    public static void makeWritable() {
+    private  static void makeWritable() {
         Log.d(TAG, "Make /system writable");
         sudo("mount -oremount,rw /system");
     }
-    public static void makeReadOnly() {
+    private  static void makeReadOnly() {
         Log.d(TAG, "Make /system read-only");
         sudo("mount -oremount,ro /system");
     }
 
     private static int[] resources = {
         R.raw.scala_collection,
-        R.raw.scala_collection_desc
-    };
-    public static void installFiles(Context ctx) {
+        R.raw.scala_collection_desc,
+        R.raw.scala_collection_immutable,
+        R.raw.scala_collection_immutable_desc,
+        R.raw.scala_collection_mutable,
+        R.raw.scala_collection_mutable_desc,
+        R.raw.scala_collection_parallel,
+        R.raw.scala_collection_parallel_desc,
+        R.raw.scala_library,
+        R.raw.scala_library_desc
 
+    };
+    private void installFiles() throws IOException {
+        for (int resid: resources)
+            installFile(resid);
+    }
+    private void makeLinks() {
+        for (int resid: resources) {
+            File path = fileForResource(resid);
+
+            if (path.getName().endsWith("_desc")) // descriptor
+                sudo("ln -sf %s /system/etc/permissions/%s.xml", path.getAbsolutePath(), path.getName());
+            else
+                sudo("ln -sf %s /data/scala-libs/%s.jar", path.getAbsolutePath(), path.getName());
+        }
     }
 
     private static Runtime runtime = Runtime.getRuntime();
-    private static void sudo(String cmd){
+    private static void sudo(String cmdFormat, Object... args){
+        String cmd = String.format(cmdFormat, args);
         try {
             Process proc = runtime.exec(new String[] {"su", "-c", cmd});
             int res = proc.waitFor();
@@ -61,12 +87,13 @@ public class ScalaInstaller {
 
     /**
      * Takes the resource with the given name and installs it into the files dir
-     * @param resource
+     * @param resid
      */
-    private void installFile(int resource) throws IOException {
-        File targetFile = fileForResource(resource);
+    private void installFile(int resid) throws IOException {
+        File targetFile = fileForResource(resid);
+        Log.i(TAG, "Extracting file to "+targetFile.getAbsolutePath());
         FileOutputStream fos = new FileOutputStream(targetFile);
-        InputStream is = ctx.getResources().openRawResource();
+        InputStream is = ctx.getResources().openRawResource(resid);
 
         byte[] buffer = new byte[65000];
 
@@ -76,8 +103,14 @@ public class ScalaInstaller {
         }
         is.close();
         fos.close();
+
+        sudo("chmod a+r "+targetFile.getAbsolutePath());
     }
-    private File fileForResource(int resource) {
-        return new File(ctx.getFilesDir(), ctx.getResources().getResourceName(resource));
+    private File fileForResource(int resid) {
+        return new File(ctx.getFilesDir(), lastPart(ctx.getResources().getResourceName(resid)));
+
+    }
+    private String lastPart(String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
     }
 }
