@@ -13,7 +13,7 @@ public class ScalaInstallerActivity extends Activity {
         installer.installScalaLibs();
 
         TextView text = new TextView(this);
-        text.setText("Result");
+        text.setText("Everything worked well");
         setContentView(text);
     }
 }
