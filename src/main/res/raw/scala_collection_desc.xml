@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.collection"
+            file="/data/framework/scala-collection.jar" />
+</permissions>
