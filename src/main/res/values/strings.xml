@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Scala Library Installer v2.9.0-1.v1</string>
     <string name="info_text">
-        Disclaimer: Execute this at your own risk\n
+        Disclaimer: Execute this at your own risk\n\n
         This installer does the following:\n\n
 
 
         1. Remount /system writable\n
         2. Extract the Scala library from this package\n
         3. Link the library descriptor files into /system/etc/permissions\n
-        4. Remount /system read-only
+        4. Remount /system read-only\n
     </string>
     <string name="run_button_text">Install Scala libraries on my phone</string>
 </resources>
