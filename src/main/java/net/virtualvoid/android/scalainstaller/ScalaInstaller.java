@@ -18,7 +18,6 @@ public class ScalaInstaller {
          *  1. Make /system writeable
          *  2. Install files into application directory
          *  3. Change permissions
-         *  4. Create /data/scala-libs directory
          *  4. Make links to ScalaLibs to /system/etc/permissions
          *  5. Make /system read-only
          */
