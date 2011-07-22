@@ -20,6 +20,9 @@ Installation
 Just [download][apk] the apk and install it on your rooted phone / emulator and follow the instructions. In the process
 the program will try to execute several commands with 'su' so this has to be enabled for your Android distribution.
 
+Usage
+-----
+
 To use the Scala library in one of your projects, add the following lines inside of the `<application>`-tag in the
 `AndroidManifest.xml`:
 
@@ -31,6 +34,41 @@ To use the Scala library in one of your projects, add the following lines inside
 
 You have to restart your phone afterwards or at least kill the `servicemanager` process. This will dexopt and cache the
 newly added libraries.
+
+If you use sbt with the [sbt-android plugin][sbt-android] plugin you now have to exclude the scala-library.jar from
+proguard. The plugin right now has no option to exclude only the Scala library but in the meantime you can override the
+proguard setting from the plugin by include this into your project definition:
+
+      import proguard.{Configuration=>ProGuardConfiguration, ProGuard, ConfigurationParser}
+      trait ProguardWithoutScala extends AndroidProject {
+        import java.io._
+
+        override def proguardTask = task {
+          val args = "-injars" :: mainCompilePath.absolutePath+//File.pathSeparator+
+                                   //scalaLibraryJar.getAbsolutePath+"(!META-INF/MANIFEST.MF,!library.properties)"+
+                                   (if (!proguardInJars.getPaths.isEmpty) File.pathSeparator+proguardInJars.getPaths.map(_+"(!META-INF/MANIFEST.MF)").mkString(File.pathSeparator) else "") ::
+                     "-outjars" :: classesMinJarPath.absolutePath ::
+                     "-libraryjars" :: libraryJarPath.getPaths.mkString(File.pathSeparator) ::
+                     "-dontwarn" :: "-dontoptimize" :: "-dontobfuscate" ::
+                     "-keep public class * extends android.app.Activity" ::
+                     "-keep public class * extends android.app.Service" ::
+                     "-keep public class * extends android.appwidget.AppWidgetProvider" ::
+                     "-keep public class * extends android.content.BroadcastReceiver" ::
+                     "-keep public class * extends android.content.ContentProvider" ::
+                     "-keep public class * extends android.view.View" ::
+                     "-keep public class * extends android.app.Application" ::
+                     "-keep public class "+manifestPackage+".** { public protected *; }" ::
+                     "-keep public class * implements junit.framework.Test { public void test*(); }" :: proguardOption :: Nil
+
+          val config = new ProGuardConfiguration
+          new ConfigurationParser(args.toArray[String], info.projectPath.asFile).parse(config)
+          new ProGuard(config).execute
+          None
+        }
+      }
+
+and extend your project from `ProguardWithoutScala` (or you put the proguardTask method directly into your project class).
+
 
 What this is not
 ----------------
@@ -48,7 +86,7 @@ and creates [descriptors][desc] in `/system/etc/permissions` which point to the 
 If it doesn't work
 ------------------
 
-[Please file a bug][issues].
+[Please file a bug][issues] or tell me in [github][gh-mail] or at johannes.rudolph@gmail.com.
 
 Credits
 -------
@@ -56,7 +94,9 @@ Credits
 [Stephane Micheloud][micheloud] already did much work on how to prepare an emulator image or a rooted phone to have Scala installed.
 The process involved creating dex'd versions of the Scala library, a new image and adapting shell scripts.
 
-  [micheloud]: http://lamp.epfl.ch/~michelou/android/index.html
-  [apk]: http://blub.de
-  [desc]: http://github.com/jrudolph/scala-android-libs/blob/master/src/main/res/raw/scala_collection_desc.xml
-  [issues]: http://github.com/jrudolph/scala-android-libs/issues
+  [apk]:         https://github.com/downloads/jrudolph/scala-android-libs/scala-android-libs_2.9.0-1-2.9.0-1.v1.apk
+  [desc]:        http://github.com/jrudolph/scala-android-libs/blob/master/src/main/res/raw/scala_collection_desc.xml
+  [issues]:      http://github.com/jrudolph/scala-android-libs/issues
+  [gh-mail]:     https://github.com/inbox/new/jrudolph
+  [sbt-android]: http://github.com/jberkel/android-plugin
+  [micheloud]:   http://lamp.epfl.ch/~michelou/android/index.html
