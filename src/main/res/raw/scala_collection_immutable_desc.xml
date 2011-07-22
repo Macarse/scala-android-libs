@@ -1,4 +1,4 @@
 <permissions>
     <library name="scala.collection.immutable"
-            file="/data/scala-libs/scala_collection_immutable.jar" />
+            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_collection_immutable.jar" />
 </permissions>

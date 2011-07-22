@@ -1,4 +1,4 @@
 <permissions>
     <library name="scala.collection"
-            file="/data/scala-libs/scala_collection.jar" />
+             file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_collection.jar" />
 </permissions>

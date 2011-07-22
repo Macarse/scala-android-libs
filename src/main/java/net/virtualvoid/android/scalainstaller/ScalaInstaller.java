@@ -26,7 +26,6 @@ public class ScalaInstaller {
         try {
             makeWritable();
             installFiles();
-            sudo("mkdir -p /data/scala-libs");
             makeLinks();
         } catch(Exception e) {
             throw new RuntimeException(e);
@@ -65,10 +64,8 @@ public class ScalaInstaller {
         for (int resid: resources) {
             File path = fileForResource(resid);
 
-            if (path.getName().endsWith("_desc")) // descriptor
-                sudo("ln -sf %s /system/etc/permissions/%s.xml", path.getAbsolutePath(), path.getName());
-            else
-                sudo("ln -sf %s /data/scala-libs/%s.jar", path.getAbsolutePath(), path.getName());
+            if (path.getName().endsWith("_desc.xml")) // descriptor
+                sudo("ln -sf %s /system/etc/permissions/%s", path.getAbsolutePath(), path.getName());
         }
     }
 
@@ -107,8 +104,13 @@ public class ScalaInstaller {
         sudo("chmod a+r "+targetFile.getAbsolutePath());
     }
     private File fileForResource(int resid) {
-        return new File(ctx.getFilesDir(), lastPart(ctx.getResources().getResourceName(resid)));
+        String namePart = lastPart(ctx.getResources().getResourceName(resid));
+        if (namePart.endsWith("_desc"))
+            namePart = namePart + ".xml";
+        else
+            namePart = namePart + ".jar";
 
+        return new File(ctx.getFilesDir(), namePart);
     }
     private String lastPart(String path) {
         return path.substring(path.lastIndexOf("/") + 1);
