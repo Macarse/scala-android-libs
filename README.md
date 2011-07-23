@@ -17,8 +17,11 @@ way (which is highly unlikely) but don't say I didn't warn you. You use this pro
 Installation
 ------------
 
-Just [download][apk] the apk and install it on your rooted phone / emulator and follow the instructions. In the process
+Just [download][apk] the apk and install it on your rooted phone and follow the instructions. In the process
 the program will try to execute several commands with 'su' so this has to be enabled for your Android distribution.
+
+You have to restart your phone afterwards or at least kill the `servicemanager` process. This will dexopt and cache the
+newly added libraries.
 
 Usage
 -----
@@ -31,9 +34,6 @@ To use the Scala library in one of your projects, add the following lines inside
         <uses-library android:name="scala.collection.mutable" android:required="true"/>
         <uses-library android:name="scala.collection.immutable" android:required="true"/>
         <uses-library android:name="scala.collection.parallel" android:required="true"/>
-
-You have to restart your phone afterwards or at least kill the `servicemanager` process. This will dexopt and cache the
-newly added libraries.
 
 If you use sbt with the [sbt-android plugin][sbt-android] plugin you now have to exclude the scala-library.jar from
 proguard. The plugin right now has no option to exclude only the Scala library but in the meantime you can override the
@@ -82,6 +82,15 @@ How does it work
 
 Well-known libraries are declared in `/system/etc/permissions`. This installer extracts the Scala library onto your phone
 and creates [descriptors][desc] in `/system/etc/permissions` which point to the installation location.
+
+Known issues
+------------
+
+Unfortunately, this method doesn't work right now on an emulator for several reasons:
+
+  - The emulator image doesn't give su-rights to any app
+  - The emulator /system image is basically read-only and is rebuild on every restart of the emulator
+
 
 If it doesn't work
 ------------------
