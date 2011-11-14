@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.xml"
+            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_xml.jar" />
+</permissions>

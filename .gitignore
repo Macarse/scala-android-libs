@@ -6,3 +6,5 @@ lib_managed
 *.iml
 *.swp
 project/plugins/project/build.properties
+.DS_Store
+

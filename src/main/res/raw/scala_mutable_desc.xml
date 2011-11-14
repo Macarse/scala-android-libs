@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.mutable"
+            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_mutable.jar" />
+</permissions>

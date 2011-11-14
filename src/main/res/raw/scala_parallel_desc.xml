@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.parallel"
+            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_parallel.jar" />
+</permissions>

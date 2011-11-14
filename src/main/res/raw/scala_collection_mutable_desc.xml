@@ -1,4 +1,0 @@
-<permissions>
-    <library name="scala.collection.mutable"
-            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_collection_mutable.jar" />
-</permissions>

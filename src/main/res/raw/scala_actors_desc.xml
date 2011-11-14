@@ -1,0 +1,4 @@
+<permissions>
+    <library name="scala.actors"
+            file="/data/data/net.virtualvoid.android.scalainstaller/files/scala_actors.jar" />
+</permissions>
